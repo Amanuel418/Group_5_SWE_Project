@@ -91,3 +91,4 @@ class SubscriptionService:
     def delete_subscription(self, subscription_id: str) -> bool:
         self.subscription_repository.delete_subscription(subscription_id)
         return True
+        
