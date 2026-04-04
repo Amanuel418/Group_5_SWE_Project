@@ -17,7 +17,7 @@ def main():
     dashboard_service = DashboardService(sub_repo)
 
     print("=== REGISTER USER ===")
-    user = auth_service.register_user("amanuel@test.com", "password123")
+    user = auth_service.register_user("amanuel@test.com", "password123", "password123")
     print("User created:", user)
 
     print("\n=== LOGIN ===")

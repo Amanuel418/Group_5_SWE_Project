@@ -14,12 +14,18 @@ class AuthService:
     def _hash_password(self, password: str) -> str:
         return hashlib.sha256(password.encode("utf-8")).hexdigest()
 
-    def register_user(self, email: str, password: str) -> User:
+    def register_user(self, email: str, password: str, retyped_password: str) -> User:
         if not email or not email.strip():
             raise ValueError("Email is required.")
 
+        if password != retyped_password:
+            raise ValueError("Passwords do not match.")
+
         if not password or not password.strip():
             raise ValueError("Password is required.")
+
+        if not (8 <= len(password) <= 12):
+            raise ValueError("Password must be between 8 and 12 characters.")
 
         if self.user_repository.get_by_email(email) is not None:
             raise ValueError("Email is already registered.")

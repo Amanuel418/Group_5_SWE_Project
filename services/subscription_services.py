@@ -18,6 +18,15 @@ class SubscriptionService:
         renewal_date: date,
         category: str
     ) -> Subscription:
+        if not name or not name.strip():
+            raise ValueError("Subscription name cannot be empty.")
+
+        if cost < 0:
+            raise ValueError("Subscription cost cannot be negative.")
+
+        if billing_frequency not in {"monthly", "yearly", "weekly"}:
+            raise ValueError("Invalid billing frequency.")
+
         duplicate = self.subscription_repository.find_duplicate(user_id, name)
         if duplicate is not None:
             raise ValueError("Duplicate subscription already exists.")
