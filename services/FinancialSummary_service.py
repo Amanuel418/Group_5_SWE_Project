@@ -1,7 +1,7 @@
 # Handles the business logic for UC11 - View Financial Summary
 # Uses the repository to save/retrieve and calculates the total cost
 
-from FinancialSummary import FinancialSummary
+from models.FinancialSummary import FinancialSummary
 
 class FinancialSummaryService:
     def __init__(self, financial_summary_repository):
