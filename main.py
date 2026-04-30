@@ -1,5 +1,6 @@
 from datetime import date
 
+from database import init_db
 from repositories.user_repository import UserRepository
 from repositories.subscription_repository import SubscriptionRepository
 from services.auth_services import AuthService
@@ -8,6 +9,9 @@ from services.dashboard_service import DashboardService
 
 
 def main():
+    # Initialize the database (creates tables if they don't exist)
+    init_db()
+
     # Initialize everything
     user_repo = UserRepository()
     sub_repo = SubscriptionRepository()

@@ -6,14 +6,28 @@ from repositories.budget_repository import BudgetRepository
 from repositories.FinancialSummary_repository import FinancialSummaryRepository
 from services.budget_services import BudgetService
 from services.FinancialSummary_service import FinancialSummaryService
+from database import get_connection
+
+
+def insert_fake_user():
+    conn = get_connection()
+    conn.execute(
+        "INSERT INTO USERS (user_id, email, password_hash, created_at, is_active) VALUES (?, ?, ?, ?, ?)",
+        ("newuser@gmail.com", "newuser@gmail.com", "fakehash", "2026-01-01T00:00:00", 1)
+    )
+    conn.commit()
+    conn.close()
+
 
 @pytest.fixture
 def budget_service():
+    insert_fake_user()
     budget_repo = BudgetRepository()
     return BudgetService(budget_repo)
 
 @pytest.fixture
 def financial_summary_service():
+    insert_fake_user()
     financial_summary_repo = FinancialSummaryRepository()
     return FinancialSummaryService(financial_summary_repo)
 
@@ -48,7 +62,7 @@ def test_budget_invalid_spending(budget_service):
     with pytest.raises(ValueError, match="Current spending must be a number"):
         budget_service.compare_spending_to_budget("newuser@gmail.com", None)
 
-# --- Use Case 11: Budget Summary --- 
+# --- Use Case 11: Budget Summary ---
 def test_financial_summary_success(financial_summary_service):
     financial_summary_service.create_summary("newuser@gmail.com", [15.99, 9.99, 54.99])
     assert financial_summary_service.calculate_total("newuser@gmail.com")["total_cost"] == 80.97

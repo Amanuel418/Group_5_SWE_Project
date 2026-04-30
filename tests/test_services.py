@@ -7,6 +7,7 @@ from repositories.user_repository import UserRepository
 from repositories.subscription_repository import SubscriptionRepository
 from services.auth_services import AuthService
 from services.subscription_services import SubscriptionService
+from database import get_connection
 
 @pytest.fixture
 def auth_service():
@@ -15,6 +16,14 @@ def auth_service():
 
 @pytest.fixture
 def sub_service():
+    # Insert fake user so foreign key constraint passes
+    conn = get_connection()
+    conn.execute(
+        "INSERT INTO USERS (user_id, email, password_hash, created_at, is_active) VALUES (?, ?, ?, ?, ?)",
+        ("user123", "test@test.com", "fakehash", "2026-01-01T00:00:00", 1)
+    )
+    conn.commit()
+    conn.close()
     sub_repo = SubscriptionRepository()
     return SubscriptionService(sub_repo)
 

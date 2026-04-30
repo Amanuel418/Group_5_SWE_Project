@@ -1,23 +1,48 @@
-# Handles storing and retrieving financial summaries
-# Uses a dictionary (in-memory) to store summaries by user_id
+import json
+from models.FinancialSummary import FinancialSummary
+from database import get_connection
+
 
 class FinancialSummaryRepository:
-    def __init__(self):
-        # Dictionary to store summaries: { user_id: FinancialSummary }
-        self.summaries = {}
-
-    def save_summary(self, summary):
-        # Save or overwrite the summary for a user
-        self.summaries[summary.user_id] = summary
+    def save_summary(self, summary: FinancialSummary) -> FinancialSummary:
+        conn = get_connection()
+        conn.execute(
+            """
+            INSERT INTO FINANCIAL_SUMMARIES (user_id, subscription_costs)
+            VALUES (?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                subscription_costs = excluded.subscription_costs
+            """,
+            (summary.user_id, json.dumps(summary.subscription_costs)),
+        )
+        conn.commit()
+        conn.close()
         return summary
 
-    def get_summary_by_user_id(self, user_id):
-        # Return the summary for a user, or None if not found
-        return self.summaries.get(user_id)
+    def get_summary_by_user_id(self, user_id: str) -> FinancialSummary | None:
+        conn = get_connection()
+        row = conn.execute(
+            "SELECT * FROM FINANCIAL_SUMMARIES WHERE user_id = ?", (user_id,)
+        ).fetchone()
+        conn.close()
+        if row is None:
+            return None
+        return FinancialSummary(
+            user_id=row["user_id"],
+            subscription_costs=json.loads(row["subscription_costs"]),
+        )
 
-    def delete_summary(self, user_id):
-        # Delete a summary; raise an error if it doesn't exist
-        if user_id not in self.summaries:
+    def delete_summary(self, user_id: str) -> bool:
+        conn = get_connection()
+        cur = conn.execute(
+            "SELECT user_id FROM FINANCIAL_SUMMARIES WHERE user_id = ?", (user_id,)
+        )
+        if cur.fetchone() is None:
+            conn.close()
             raise ValueError("Summary not found")
-        del self.summaries[user_id]
+        conn.execute(
+            "DELETE FROM FINANCIAL_SUMMARIES WHERE user_id = ?", (user_id,)
+        )
+        conn.commit()
+        conn.close()
         return True
