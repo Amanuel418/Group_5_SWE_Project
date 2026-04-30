@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register - Budget Optimizer</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #1a1a2e;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .auth-card h1 { font-size: 1.6rem; color: #1a1a2e; margin-bottom: 0.25rem; }
+        .auth-card .subtitle { color: #888; font-size: 0.9rem; margin-bottom: 2rem; }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.7rem 0.9rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus { outline: none; border-color: #4ecca3; }
+
+        .hint { font-size: 0.78rem; color: #999; margin-top: 0.25rem; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.8rem;
+            background: #4ecca3;
+            color: #1a1a2e;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-submit:hover { opacity: 0.85; }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.88rem;
+            color: #888;
+        }
+
+        .auth-footer a { color: #4ecca3; text-decoration: none; font-weight: 600; }
+
+        .flash {
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h1>💰 Budget Optimizer</h1>
+        <p class="subtitle">Create your account</p>
+
+        {% for category, message in get_flashed_messages(with_categories=true) %}
+            <div class="flash">{{ message }}</div>
+        {% endfor %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="you@example.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+                <p class="hint">Must be 8–12 characters.</p>
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" placeholder="••••••••" required>
+            </div>
+            <button type="submit" class="btn-submit">Create Account</button>
+        </form>
+
+        <div class="auth-footer">
+            Already have an account? <a href="{{ url_for('login') }}">Log in</a>
+        </div>
+    </div>
+</body>
+</html>

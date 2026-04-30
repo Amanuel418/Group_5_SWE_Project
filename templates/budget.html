@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Budget - Budget Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Budget Settings</h1>
+</div>
+
+<!-- Current budget status -->
+{% if budget_status %}
+<div class="card">
+    <h2>Current Status</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: center;">
+        <div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #4ecca3;">
+                ${{ "%.2f"|format(budget_status.monthly_limit) }}
+            </div>
+            <div style="color: #888; font-size: 0.82rem;">Monthly Limit</div>
+        </div>
+        <div>
+            <div style="font-size: 1.6rem; font-weight: 700; color: #1a1a2e;">
+                ${{ "%.2f"|format(budget_status.current_spending) }}
+            </div>
+            <div style="color: #888; font-size: 0.82rem;">Current Spending</div>
+        </div>
+        <div>
+            <div style="font-size: 1.6rem; font-weight: 700;
+                color: {% if budget_status.status == 'Over Budget' %}#e74c3c
+                       {% elif budget_status.status == 'Warning' %}#f39c12
+                       {% else %}#4ecca3{% endif %};">
+                {{ budget_status.percentage_used }}%
+            </div>
+            <div style="color: #888; font-size: 0.82rem;">Used</div>
+        </div>
+        <div>
+            <span class="badge
+                {% if budget_status.status == 'Over Budget' %}badge-danger
+                {% elif budget_status.status == 'Warning' %}badge-warning
+                {% else %}badge-success{% endif %}"
+                style="font-size: 0.95rem; padding: 0.4rem 1rem; margin-top: 0.4rem; display: inline-block;">
+                {{ budget_status.status }}
+            </span>
+            <div style="color: #888; font-size: 0.82rem; margin-top: 0.3rem;">Status</div>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div style="margin-top: 1.5rem;">
+        <div style="background: #f0f0f0; border-radius: 20px; height: 14px; overflow: hidden;">
+            <div style="
+                width: {{ [budget_status.percentage_used, 100]|min }}%;
+                height: 100%;
+                border-radius: 20px;
+                background: {% if budget_status.status == 'Over Budget' %}#e74c3c
+                            {% elif budget_status.status == 'Warning' %}#f39c12
+                            {% else %}#4ecca3{% endif %};">
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Set / update budget form -->
+<div class="card">
+    <h2>{{ "Update Budget" if budget else "Set Your Budget" }}</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Monthly Limit ($)</label>
+            <input type="number" name="monthly_limit" step="0.01" min="0"
+                   value="{{ budget.monthly_limit if budget else '' }}"
+                   placeholder="e.g. 200.00" required>
+        </div>
+
+        <div class="form-group">
+            <label>Warning Threshold (%)</label>
+            <input type="number" name="warning_threshold" step="1" min="1" max="100"
+                   value="{{ budget.warning_threshold if budget else 80 }}"
+                   placeholder="80">
+            <p style="font-size: 0.78rem; color: #999; margin-top: 0.25rem;">
+                You'll see a warning when spending reaches this % of your limit.
+            </p>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+            {{ "Update Budget" if budget else "Set Budget" }}
+        </button>
+    </form>
+</div>
+{% endblock %}

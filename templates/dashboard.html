@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Budget Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Dashboard</h1>
+    <a href="{{ url_for('add_subscription') }}" class="btn btn-primary">+ Add Subscription</a>
+</div>
+
+<!-- Summary Cards -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+
+    <div class="card" style="margin-bottom: 0; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #4ecca3;">
+            {{ summary.active_subscription_count }}
+        </div>
+        <div style="color: #888; font-size: 0.85rem; margin-top: 0.25rem;">Active Subscriptions</div>
+    </div>
+
+    <div class="card" style="margin-bottom: 0; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700; color: #4ecca3;">
+            ${{ "%.2f"|format(summary.total_monthly_cost) }}
+        </div>
+        <div style="color: #888; font-size: 0.85rem; margin-top: 0.25rem;">Monthly Cost</div>
+    </div>
+
+    {% if budget_status %}
+    <div class="card" style="margin-bottom: 0; text-align: center;">
+        <div style="font-size: 2rem; font-weight: 700;
+            color: {% if budget_status.status == 'Over Budget' %}#e74c3c
+                   {% elif budget_status.status == 'Warning' %}#f39c12
+                   {% else %}#4ecca3{% endif %};">
+            {{ budget_status.percentage_used }}%
+        </div>
+        <div style="color: #888; font-size: 0.85rem; margin-top: 0.25rem;">Budget Used</div>
+        <span class="badge
+            {% if budget_status.status == 'Over Budget' %}badge-danger
+            {% elif budget_status.status == 'Warning' %}badge-warning
+            {% else %}badge-success{% endif %}"
+            style="margin-top: 0.5rem; display: inline-block;">
+            {{ budget_status.status }}
+        </span>
+    </div>
+    {% else %}
+    <div class="card" style="margin-bottom: 0; text-align: center;">
+        <div style="color: #aaa; font-size: 0.9rem; padding: 0.5rem 0;">No budget set</div>
+        <a href="{{ url_for('budget') }}" class="btn btn-primary" style="margin-top: 0.5rem; font-size: 0.8rem;">Set Budget</a>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- Budget progress bar -->
+{% if budget_status %}
+<div class="card">
+    <h2>Budget Overview</h2>
+    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #888; margin-bottom: 0.5rem;">
+        <span>${{ "%.2f"|format(budget_status.current_spending) }} spent</span>
+        <span>${{ "%.2f"|format(budget_status.monthly_limit) }} limit</span>
+    </div>
+    <div style="background: #f0f0f0; border-radius: 20px; height: 12px; overflow: hidden;">
+        <div style="
+            width: {{ [budget_status.percentage_used, 100]|min }}%;
+            height: 100%;
+            border-radius: 20px;
+            background: {% if budget_status.status == 'Over Budget' %}#e74c3c
+                        {% elif budget_status.status == 'Warning' %}#f39c12
+                        {% else %}#4ecca3{% endif %};
+            transition: width 0.5s ease;">
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Upcoming renewals -->
+<div class="card">
+    <h2>Upcoming Renewals</h2>
+    {% if summary.upcoming_renewals %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Renewal Date</th>
+                <th>Cost</th>
+                <th>Frequency</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in summary.upcoming_renewals %}
+            <tr>
+                <td><strong>{{ sub.name }}</strong></td>
+                <td>{{ sub.renewal_date }}</td>
+                <td>${{ "%.2f"|format(sub.cost) }}</td>
+                <td>{{ sub.billing_frequency | capitalize }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #aaa; font-size: 0.9rem;">No subscriptions yet. <a href="{{ url_for('add_subscription') }}">Add one!</a></p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Edit Subscription - Budget Optimizer{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Edit Subscription</h1>
+    <a href="{{ url_for('subscriptions') }}" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="card">
+    <form method="POST">
+        <div class="form-group">
+            <label>Subscription Name</label>
+            <input type="text" name="name" value="{{ sub.name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" name="category" value="{{ sub.category }}" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label>Cost ($)</label>
+                <input type="number" name="cost" step="0.01" min="0" value="{{ sub.cost }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Billing Frequency</label>
+                <select name="billing_frequency" required>
+                    <option value="monthly"  {% if sub.billing_frequency == "monthly"  %}selected{% endif %}>Monthly</option>
+                    <option value="yearly"   {% if sub.billing_frequency == "yearly"   %}selected{% endif %}>Yearly</option>
+                    <option value="weekly"   {% if sub.billing_frequency == "weekly"   %}selected{% endif %}>Weekly</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Renewal Date</label>
+            <input type="date" name="renewal_date" value="{{ sub.renewal_date }}" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem;">
+            Save Changes
+        </button>
+    </form>
+</div>
+{% endblock %}
