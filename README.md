@@ -1,6 +1,6 @@
-# Budget Optimizer
+# Subscription & Budget Optimizer
 
-Budget Optimizer is a small Python web app for tracking subscriptions, setting a monthly budget, and viewing a simple spending dashboard.
+Subscription & Budget Optimizer is a small Python web app for tracking subscriptions, setting a monthly budget, and viewing a simple spending dashboard.
 
 ## Features
 
